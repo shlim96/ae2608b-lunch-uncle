@@ -1,0 +1,16 @@
+{
+  "name": "lunch-uncle",
+  "version": "1.0.0",
+  "description": "A chatbot that tells you where to eat lunch near CT Hub 2, Lavender.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "node --test"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

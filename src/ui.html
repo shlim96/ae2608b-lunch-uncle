@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lunch Uncle</title>
+  <style>
+    :root { --uncle: #fde68a; --you: #dbeafe; --ink: #1f2937; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: system-ui, sans-serif; color: var(--ink);
+      background: #f9fafb; display: flex; flex-direction: column; height: 100vh;
+    }
+    header { padding: 1rem; background: #fff; border-bottom: 1px solid #e5e7eb; }
+    header h1 { margin: 0; font-size: 1.25rem; }
+    header p { margin: .25rem 0 0; color: #6b7280; font-size: .875rem; }
+    #chat { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: .5rem; }
+    .bubble {
+      max-width: 75%; padding: .6rem .9rem; border-radius: 1rem; line-height: 1.4;
+      white-space: pre-wrap; word-wrap: break-word;
+    }
+    .uncle { background: var(--uncle); align-self: flex-start; border-bottom-left-radius: .25rem; }
+    .you { background: var(--you); align-self: flex-end; border-bottom-right-radius: .25rem; }
+    form { display: flex; gap: .5rem; padding: 1rem; background: #fff; border-top: 1px solid #e5e7eb; }
+    input { flex: 1; padding: .6rem .9rem; font-size: 1rem; border: 1px solid #d1d5db; border-radius: .5rem; }
+    button { padding: .6rem 1.2rem; font-size: 1rem; border: 0; border-radius: .5rem; background: var(--ink); color: #fff; cursor: pointer; }
+    button:disabled { opacity: .5; cursor: default; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Lunch Uncle</h1>
+    <p>Tell Uncle what you feel like eating. He is at CT Hub 2, Lavender.</p>
+  </header>
+
+  <div id="chat"></div>
+
+  <form id="form">
+    <input id="input" placeholder="Uncle, where to eat?" autocomplete="off" autofocus>
+    <button id="send" type="submit">Send</button>
+  </form>
+
+  <script>
+    const chat = document.getElementById("chat");
+    const form = document.getElementById("form");
+    const input = document.getElementById("input");
+    const send = document.getElementById("send");
+
+    // Conversation so far, in the shape the /chat endpoint expects.
+    const history = [];
+
+    function addBubble(role, text) {
+      const div = document.createElement("div");
+      div.className = `bubble ${role === "user" ? "you" : "uncle"}`;
+      div.textContent = text;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+      return div;
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const message = input.value.trim();
+      if (!message) return;
+
+      input.value = "";
+      send.disabled = true;
+      addBubble("user", message);
+      const thinking = addBubble("assistant", "Uncle thinking...");
+
+      try {
+        const res = await fetch("/chat", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ history, message }),
+        });
+        const data = await res.json();
+        const reply = data.reply ?? data.error ?? "No reply.";
+        thinking.textContent = reply;
+        history.push({ role: "user", content: message });
+        history.push({ role: "assistant", content: reply });
+      } catch (err) {
+        thinking.textContent = "Cannot reach Uncle. Try again.";
+      } finally {
+        send.disabled = false;
+        input.focus();
+      }
+    });
+
+    addBubble("assistant", "Eh, what you want to eat? Don't waste my time.");
+  </script>
+</body>
+</html>

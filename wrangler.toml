@@ -1,0 +1,12 @@
+name = "lunch-uncle"
+main = "src/index.js"
+compatibility_date = "2025-08-01"
+
+# Serve the chat page from a plain HTML file, imported as a string.
+[[rules]]
+type = "Text"
+globs = ["**/*.html"]
+
+# Secrets (OPENCODE_API_KEY, GOOGLE_PLACES_API_KEY) are set with
+# `wrangler secret put` for deploys and `.dev.vars` for local dev.
+# Never put them in this file.
