@@ -34,15 +34,15 @@ sequenceDiagram
    ```sh
    npm install
    ```
-3. Create `.dev.vars` from `.dev.vars.example` and fill in your keys:
+3. Create `.env` from `.env.example` and fill in your keys:
    ```sh
-   cp .dev.vars.example .dev.vars
+   cp .env.example .env
    ```
    ```
    OPENCODE_API_KEY=your-key-here
    GOOGLE_PLACES_API_KEY=your-key-here
    ```
-4. Fill in the two `TODO` constants at the top of `src/loop.js`: `LLM_BASE_URL` and `LLM_MODEL`, for your OpenAI-compatible provider.
+4. Fill in the two `TODO` constants at the top of `src/loop.js`: `LLM_BASE_URL` and `LLM_MODEL`, for the OpenCode Go endpoint and model.
 5. Start the dev server:
    ```sh
    npm run dev
@@ -55,7 +55,7 @@ sequenceDiagram
    npm run deploy
    ```
 
-Secrets never go in code or in `wrangler.toml`. Local dev reads them from `.dev.vars`, which is gitignored; production reads them from Cloudflare secrets set with `wrangler secret put`.
+Secrets never go in code or in `wrangler.toml`. Local development reads them from `.env`, which is gitignored; production reads them from Cloudflare secrets set with `wrangler secret put`.
 
 ## Running tests
 
